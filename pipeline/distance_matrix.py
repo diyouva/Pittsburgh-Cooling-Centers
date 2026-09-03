@@ -9,7 +9,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from config import DATA_PROCESSED, CRS_PROJECTED, CRS_GEO
 
-DETOUR_FACTOR = 1.3  # typical urban pedestrian detour ratio
+DETOUR_FACTOR = 1.3  # typical urban pedestrian detour  # typical urban pedestrian detour ratio
 
 
 def compute_distance_matrix() -> np.ndarray:
