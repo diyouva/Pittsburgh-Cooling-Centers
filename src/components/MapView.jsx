@@ -163,3 +163,4 @@ export default function MapView({ blockGroups, sites, scenario, assignmentMap })
     </div>
   );
 }
+
