@@ -7,11 +7,11 @@ export default function SiteList({ sites, scenario }) {
     .sort((a, b) => (a.is_existing ? 1 : 0) - (b.is_existing ? 1 : 0));
 
   return (
-    <div className="bg-[#f5faf7] rounded-xl border border-[#c8e3d8] p-6">
+    <div className="bg-[#f5faf7] rounded-xl border border-[#c8e3d8] p-6 h-full flex flex-col">
       <h3 className="text-lg font-semibold text-[#171717] mb-1">Selected Sites</h3>
       <p className="text-xs text-[#54494B] mb-4">{openSites.length} centers ({openSites.filter(s => s.is_existing).length} existing + {openSites.filter(s => !s.is_existing).length} new)</p>
 
-      <div className="max-h-[360px] overflow-y-auto space-y-1.5">
+      <div className="flex-1 overflow-y-auto space-y-1.5">
         {openSites.map(site => (
           <div
             key={site.site_id}

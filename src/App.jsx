@@ -59,7 +59,7 @@ export default function App() {
                 />
               )}
             </div>
-            <div>
+            <div className="xl:h-[520px]">
               {loading ? <SkeletonChart /> : <SiteList sites={data.sites} scenario={scenario} />}
             </div>
           </div>
