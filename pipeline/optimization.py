@@ -163,7 +163,8 @@ def run_scenario_analysis():
     ]
     budget_range = range(0, 11)
 
-    all_results = []
+    all_scenarios = []
+    all_assignments = {}
 
     for obj in objectives:
         print(f"\n--- Objective: {obj} ---")
@@ -172,43 +173,52 @@ def run_scenario_analysis():
                 dist_matrix, existing_mask, n_new, obj,
                 population, vulnerability,
             )
-            if result:
-                result["open_site_ids"] = result.pop("open_sites")
-                result["open_site_names"] = [
-                    sites.iloc[j]["site_name"] for j in result["open_site_ids"]
-                ]
-                del result["assignments"]
-                del result["distances"]
-                all_results.append(result)
-                print(f"  n_new={n_new:2d} | mean={result['mean_distance']:,.0f}m "
-                      f"| max={result['max_distance']:,.0f}m "
-                      f"| coverage={result['pct_covered_15min']:.1f}%")
+            if not result:
+                print(f"  n_new={n_new:2d} | INFEASIBLE")
+                continue
 
-    results_df = pd.DataFrame(all_results)
+            open_ids = result["open_sites"]
+            distances = result["distances"]
+
+            scenario = {
+                "objective": obj,
+                "n_new": n_new,
+                "mean_distance": float(distances.mean()),
+                "max_distance": float(distances.max()),
+                "median_distance": float(np.median(distances)),
+                "p90_distance": float(np.percentile(distances, 90)),
+                "pct_covered_15min": float(
+                    population[distances <= MAX_WALK_METERS].sum()
+                    / population.sum() * 100
+                ),
+                "open_site_ids": open_ids,
+                "open_site_names": [
+                    sites.iloc[j]["site_name"] for j in open_ids
+                ],
+            }
+            all_scenarios.append(scenario)
+
+            key = f"{obj}_{n_new}"
+            arr = []
+            for i, j in result["assignments"].items():
+                arr.append({
+                    "geoid": int(bg.iloc[i]["GEOID"]),
+                    "site_id": int(sites.iloc[j]["site_id"]),
+                    "site_name": sites.iloc[j]["site_name"],
+                    "distance_m": round(float(distances[i]), 1),
+                })
+            all_assignments[key] = arr
+
+            print(f"  n_new={n_new:2d} | mean={scenario['mean_distance']:,.0f}m "
+                  f"| max={scenario['max_distance']:,.0f}m "
+                  f"| coverage={scenario['pct_covered_15min']:.1f}%")
+
+    results_df = pd.DataFrame(all_scenarios)
     results_df.to_csv(DATA_OUTPUT / "scenario_results.csv", index=False)
 
-    # Save detailed assignments for the best scenario per objective (5 new centers)
-    detail_results = []
-    for obj in objectives:
-        result = solve_facility_location(
-            dist_matrix, existing_mask, 5, obj,
-            population, vulnerability,
-        )
-        if result:
-            for i, j in result["assignments"].items():
-                detail_results.append({
-                    "objective": obj,
-                    "GEOID": bg.iloc[i]["GEOID"],
-                    "assigned_site_id": j,
-                    "assigned_site_name": sites.iloc[j]["site_name"],
-                    "distance_m": result["distances"][i],
-                })
-    detail_df = pd.DataFrame(detail_results)
-    detail_df.to_csv(DATA_OUTPUT / "assignment_details_5new.csv", index=False)
-
-    print(f"\nScenario results saved ({len(results_df)} rows)")
-    print(f"Assignment details saved ({len(detail_df)} rows)")
-    return results_df
+    print(f"\nScenario results: {len(all_scenarios)} scenarios")
+    print(f"Assignments: {len(all_assignments)} scenario-assignment sets")
+    return all_scenarios, all_assignments
 
 
 if __name__ == "__main__":

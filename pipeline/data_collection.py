@@ -3,6 +3,7 @@
 import requests
 import pandas as pd
 import geopandas as gpd
+import osmnx as ox
 from pathlib import Path
 
 import sys
@@ -11,7 +12,7 @@ from config import (
     DATA_RAW, DATA_PROCESSED, WPRDC_BASE, WPRDC_FACILITIES_ID,
     WPRDC_LIBRARIES_ID, CENSUS_BASE, CENSUS_API_KEY, PA_STATE_FIPS,
     COUNTY_FIPS, EXISTING_COOLING_CENTERS,
-    ADDITIONAL_CANDIDATE_SITES, CRS_GEO,
+    ADDITIONAL_CANDIDATE_SITES, CRS_GEO, CRS_PROJECTED,
 )
 
 
@@ -71,7 +72,6 @@ def collect_candidate_sites() -> gpd.GeoDataFrame:
     )
     gdf["is_existing_center"] = gdf["type"] == "Senior Center (Existing)"
     gdf["site_id"] = range(len(gdf))
-    gdf.to_file(DATA_PROCESSED / "candidate_sites.geojson", driver="GeoJSON")
 
     n_exist = gdf["is_existing_center"].sum()
     n_new = len(gdf) - n_exist
@@ -147,13 +147,42 @@ def collect_census_block_groups() -> gpd.GeoDataFrame:
 
     merged = bg_gdf.merge(df, on="GEOID", how="inner")
     merged = gpd.GeoDataFrame(merged, geometry="geometry", crs=CRS_GEO)
-    merged.to_file(DATA_PROCESSED / "block_groups.geojson", driver="GeoJSON")
     print(f"  Block groups with demographics: {len(merged)}")
     return merged
 
 
 # ---------------------------------------------------------------------------
-# 3. CDC SVI
+# 3. Pittsburgh City Filter
+# ---------------------------------------------------------------------------
+
+def filter_to_pittsburgh(
+    block_groups: gpd.GeoDataFrame,
+    candidates: gpd.GeoDataFrame,
+) -> tuple[gpd.GeoDataFrame, gpd.GeoDataFrame]:
+    """Filter block groups (centroid-within) and sites (point-within) to Pittsburgh city."""
+    print("  Downloading Pittsburgh city boundary...")
+    pgh = ox.geocode_to_gdf("Pittsburgh, Pennsylvania, USA")
+    pgh_geom = pgh.geometry.iloc[0]
+
+    bg_proj = block_groups.to_crs(CRS_PROJECTED)
+    pgh_proj = gpd.GeoSeries([pgh_geom], crs=CRS_GEO).to_crs(CRS_PROJECTED).iloc[0]
+
+    centroid_mask = bg_proj.geometry.centroid.within(pgh_proj)
+    bg_pgh = block_groups[centroid_mask].copy().reset_index(drop=True)
+
+    sites_pgh = candidates[candidates.within(pgh_geom)].copy().reset_index(drop=True)
+    sites_pgh["site_id"] = range(len(sites_pgh))
+
+    print(f"  Block groups: {len(block_groups)} → {len(bg_pgh)}")
+    print(f"  Candidate sites: {len(candidates)} → {len(sites_pgh)}")
+    print(f"  Population: {block_groups['total_pop'].sum():,.0f} → {bg_pgh['total_pop'].sum():,.0f}")
+    print(f"  Existing centers: {sites_pgh['is_existing_center'].sum()}")
+
+    return bg_pgh, sites_pgh
+
+
+# ---------------------------------------------------------------------------
+# 4. Vulnerability Index
 # ---------------------------------------------------------------------------
 
 def compute_vulnerability_index(block_groups: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
@@ -168,7 +197,6 @@ def compute_vulnerability_index(block_groups: gpd.GeoDataFrame) -> gpd.GeoDataFr
 
     bg["vulnerability_score"] = bg[[f"{c}_rank" for c in indicators]].mean(axis=1)
 
-    bg.to_file(DATA_PROCESSED / "block_groups.geojson", driver="GeoJSON")
     print(f"  Vulnerability scores assigned to {len(bg)} block groups")
     print(f"  Score range: {bg['vulnerability_score'].min():.3f} – {bg['vulnerability_score'].max():.3f}")
     return bg
@@ -182,16 +210,22 @@ def collect_all():
     DATA_RAW.mkdir(parents=True, exist_ok=True)
     DATA_PROCESSED.mkdir(parents=True, exist_ok=True)
 
-    print("=== 1/3 Candidate sites ===")
+    print("=== 1/4 Candidate sites ===")
     candidates = collect_candidate_sites()
 
-    print("\n=== 2/3 Census ACS demographics ===")
+    print("\n=== 2/4 Census ACS demographics ===")
     block_groups = collect_census_block_groups()
 
-    print("\n=== 3/3 Vulnerability index ===")
+    print("\n=== 3/4 Filter to Pittsburgh city ===")
+    block_groups, candidates = filter_to_pittsburgh(block_groups, candidates)
+
+    print("\n=== 4/4 Vulnerability index ===")
     block_groups = compute_vulnerability_index(block_groups)
 
-    print("\nData collection complete.")
+    block_groups.to_file(DATA_PROCESSED / "block_groups.geojson", driver="GeoJSON")
+    candidates.to_file(DATA_PROCESSED / "candidate_sites.geojson", driver="GeoJSON")
+
+    print(f"\nData collection complete: {len(block_groups)} block groups, {len(candidates)} sites")
     return candidates, block_groups
 
 
