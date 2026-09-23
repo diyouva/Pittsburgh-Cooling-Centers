@@ -81,7 +81,7 @@ export default function Sidebar({ objective, setObjective, nNew, setNNew }) {
         <div>
           <h2 className="text-sm font-semibold uppercase tracking-wider text-[#171717] mb-3">Data Sources</h2>
           <div className="text-sm leading-relaxed text-[#54494B] space-y-2">
-            <p><span className="font-medium text-[#171717]">383 block groups:</span> Census TIGER/Line + ACS 2022 demographics for Pittsburgh city.</p>
+            <p><span className="font-medium text-[#171717]">305 block groups:</span> Census TIGER/Line + ACS 2022 demographics for Pittsburgh city.</p>
             <p><span className="font-medium text-[#171717]">86 candidate sites:</span> WPRDC facilities (rec centers, libraries, pools, senior centers).</p>
             <p><span className="font-medium text-[#171717]">5 existing centers:</span> currently designated City of Pittsburgh cooling centers.</p>
           </div>
