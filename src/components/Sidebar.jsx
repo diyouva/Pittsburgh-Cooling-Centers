@@ -1,33 +1,14 @@
+import { useState } from 'react';
 import { OBJECTIVES, OBJ_MAP } from '../utils/constants';
 
 export default function Sidebar({ objective, setObjective, nNew, setNNew }) {
   const obj = OBJ_MAP[objective];
+  const [showGuide, setShowGuide] = useState(false);
 
   return (
-    <aside className="w-full lg:w-96 shrink-0 bg-[#eef6f2] border-r border-[#c8e3d8] p-6 flex flex-col gap-5">
+    <aside className="w-full lg:w-96 shrink-0 bg-[#eef6f2] border-r border-[#c8e3d8] p-6 flex flex-col gap-5 lg:overflow-y-auto lg:max-h-screen">
 
-      {/* 1. How to Use */}
-      <div>
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-[#171717] mb-2">How to Use</h3>
-        <div className="text-xs leading-relaxed text-[#54494B] space-y-2">
-          <p>
-            <span className="font-medium text-[#171717]">Step 1.</span> Choose an optimization objective from the dropdown below. Each objective reflects a different equity priority for placing new cooling centers.
-          </p>
-          <p>
-            <span className="font-medium text-[#171717]">Step 2.</span> Adjust the slider to set the number of new centers (0 to 10). The map, metrics, and site list update instantly to show the optimal placement for that budget.
-          </p>
-          <p>
-            <span className="font-medium text-[#171717]">Step 3.</span> Hover over block groups on the map to see walking distance, population, and the assigned nearest center. Blue markers are existing centers; red markers are newly recommended sites.
-          </p>
-          <p>
-            <span className="font-medium text-[#171717]">Step 4.</span> Scroll down to compare how all five objectives perform across budget levels in the Scenario Analysis charts, and review the Objective Comparison table for a side by side summary at five new centers.
-          </p>
-        </div>
-      </div>
-
-      <hr className="border-[#c8e3d8]" />
-
-      {/* 2. Model Controls */}
+      {/* 1. Model Controls (moved to top) */}
       <div>
         <div className="flex items-center gap-2 mb-1">
           <div className="w-2 h-2 rounded-full bg-[#B33951] animate-pulse" />
@@ -83,6 +64,39 @@ export default function Sidebar({ objective, setObjective, nNew, setNNew }) {
           <span>5</span>
           <span>10</span>
         </div>
+      </div>
+
+      <hr className="border-[#c8e3d8]" />
+
+      {/* 2. How to Use (collapsible) */}
+      <div>
+        <button
+          onClick={() => setShowGuide(v => !v)}
+          className="flex items-center justify-between w-full cursor-pointer group"
+        >
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-[#171717]">How to Use</h3>
+          <span className={`text-[#54494B] text-xs transition-transform duration-200 ${showGuide ? 'rotate-180' : ''}`}>
+            ▾
+          </span>
+        </button>
+        {showGuide && (
+          <div className="mt-2 grid grid-cols-2 gap-2">
+            {[
+              { n: '1', t: 'Pick an objective', d: 'Choose an equity priority from the dropdown' },
+              { n: '2', t: 'Set budget', d: 'Drag slider to add 0-10 new centers' },
+              { n: '3', t: 'Explore map', d: 'Hover block groups for distance and population' },
+              { n: '4', t: 'Compare', d: 'Scroll down for charts and trade-off tables' },
+            ].map(s => (
+              <div key={s.n} className="bg-[#f5faf7] rounded-lg p-2.5 border border-[#d4ebe1]">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <span className="w-4 h-4 rounded-full bg-[#91C7B1] text-[9px] font-bold text-white flex items-center justify-center">{s.n}</span>
+                  <span className="text-[11px] font-medium text-[#171717]">{s.t}</span>
+                </div>
+                <p className="text-[10px] text-[#54494B] leading-snug">{s.d}</p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <hr className="border-[#c8e3d8]" />

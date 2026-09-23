@@ -34,16 +34,34 @@ export default function App() {
       />
 
       <main className="flex-1 overflow-y-auto">
-        <header className="px-6 pt-6 pb-4 border-b border-[#d4ebe1] bg-[#eef6f2]">
-          <div className="flex items-center gap-3 mb-1">
-            <span className="text-3xl">🌡️</span>
-            <h1 className="text-2xl font-bold text-[#171717]">
-              Pittsburgh Cooling Centers
-            </h1>
+        <header className="px-6 pt-6 pb-5 border-b border-[#d4ebe1] bg-[#eef6f2]">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-3 mb-1">
+                <span className="text-3xl">🌡️</span>
+                <h1 className="text-2xl font-bold text-[#171717]">
+                  Pittsburgh Cooling Centers
+                </h1>
+              </div>
+              <p className="text-sm text-[#54494B]">
+                An equity-aware facility location model for heat-wave shelter access in Allegheny County
+              </p>
+            </div>
+            <div className="flex items-center gap-4 text-xs text-[#54494B]">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[#2563eb]" />
+                <span><b className="text-[#171717]">87</b> candidate sites</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[#B33951]" />
+                <span><b className="text-[#171717]">1,050</b> block groups</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[#059669]" />
+                <span><b className="text-[#171717]">5</b> objectives</span>
+              </div>
+            </div>
           </div>
-          <p className="text-sm text-[#54494B]">
-            An equity-aware facility location model for heat-wave shelter access in Allegheny County
-          </p>
         </header>
 
         <div className="p-6 space-y-6">
