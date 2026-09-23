@@ -120,12 +120,14 @@ def solve_facility_location(
         return None
 
     open_sites = [j for j in range(n_sites) if y[j].X > 0.5]
+
+    # Re-assign each demand point to its nearest open site.
+    # Gurobi may assign arbitrarily when the objective is indifferent
+    # (e.g. minimax or coverage), producing misleading distance colors.
     assignments = {}
     for i in range(n_demand):
-        for j in range(n_sites):
-            if x[i, j].X > 0.5:
-                assignments[i] = j
-                break
+        best_j = min(open_sites, key=lambda j: dist_matrix[i, j])
+        assignments[i] = best_j
 
     distances = np.array([dist_matrix[i, assignments[i]] for i in range(n_demand)])
 
