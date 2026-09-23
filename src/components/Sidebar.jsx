@@ -71,7 +71,7 @@ export default function Sidebar({ objective, setObjective, nNew, setNNew }) {
           <h2 className="text-sm font-semibold uppercase tracking-wider text-[#171717] mb-3">Methodology</h2>
           <div className="text-sm leading-relaxed text-[#54494B] space-y-2">
             <p><span className="font-medium text-[#171717]">Vulnerability Index:</span> percentile ranks of % aged 65+, poverty rate, and % no-vehicle households, averaged per block group.</p>
-            <p><span className="font-medium text-[#171717]">Distance:</span> Euclidean in EPSG:2272 × 1.3 detour factor. 15-min walk = 1,250 m.</p>
+            <p><span className="font-medium text-[#171717]">Distance:</span> OSMnx street-network walking distance via Dijkstra shortest paths. 15-min walk = 1,250 m.</p>
             <p><span className="font-medium text-[#171717]">Solver:</span> Gurobi MILP with binary site-open and demand-assignment variables.</p>
           </div>
         </div>
@@ -81,8 +81,8 @@ export default function Sidebar({ objective, setObjective, nNew, setNNew }) {
         <div>
           <h2 className="text-sm font-semibold uppercase tracking-wider text-[#171717] mb-3">Data Sources</h2>
           <div className="text-sm leading-relaxed text-[#54494B] space-y-2">
-            <p><span className="font-medium text-[#171717]">1,050 block groups:</span> Census TIGER/Line + ACS 2022 demographics.</p>
-            <p><span className="font-medium text-[#171717]">87 candidate sites:</span> WPRDC facilities (rec centers, libraries, pools, senior centers).</p>
+            <p><span className="font-medium text-[#171717]">383 block groups:</span> Census TIGER/Line + ACS 2022 demographics for Pittsburgh city.</p>
+            <p><span className="font-medium text-[#171717]">86 candidate sites:</span> WPRDC facilities (rec centers, libraries, pools, senior centers).</p>
             <p><span className="font-medium text-[#171717]">5 existing centers:</span> currently designated City of Pittsburgh cooling centers.</p>
           </div>
         </div>

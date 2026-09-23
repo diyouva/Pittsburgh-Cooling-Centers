@@ -20,8 +20,8 @@ export default function App() {
   );
 
   const assignmentMap = useMemo(
-    () => data ? getAssignmentMap(data.assignments, objective) : {},
-    [data, objective]
+    () => data ? getAssignmentMap(data.assignments, objective, nNew) : {},
+    [data, objective, nNew]
   );
 
   return (

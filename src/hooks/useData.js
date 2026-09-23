@@ -23,8 +23,9 @@ export function getScenario(scenarios, objective, nNew) {
   return scenarios.find(s => s.objective === objective && s.n_new === nNew);
 }
 
-export function getAssignmentMap(assignments, objective) {
-  const arr = assignments[objective];
+export function getAssignmentMap(assignments, objective, nNew) {
+  const key = `${objective}_${nNew}`;
+  const arr = assignments[key];
   if (!arr) return {};
   const map = {};
   for (const a of arr) {
