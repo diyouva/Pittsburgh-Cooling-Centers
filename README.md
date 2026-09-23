@@ -8,7 +8,7 @@ An equity-aware facility location optimization model for heat-wave shelter acces
 
 ## Problem
 
-Pittsburgh currently operates only **5 cooling centers** during heat emergencies - placed wherever public buildings happen to be, not where vulnerable residents actually live. With only **2.7%** of Allegheny County's population within a 15-minute walk of a center, the current network is severely inadequate for pedestrian access.
+Pittsburgh currently activates only **5 cooling centers** during heat emergencies - placed wherever public buildings happen to be, not where vulnerable residents actually live. With only **2.7%** of Allegheny County's population within a 15-minute walk of a center, the current network is severely inadequate for pedestrian access.
 
 This project answers: **if the city had the budget to open 5-10 new cooling centers, where should they go?**
 
