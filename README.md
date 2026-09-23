@@ -119,25 +119,25 @@ The project follows a three-stage pipeline, then serves results through a React 
 ```
 Stage 1: Data Collection          Stage 2: Distance Matrix         Stage 3: Optimization
 ┌──────────────────────┐         ┌─────────────────────┐         ┌──────────────────────┐
-│ data_collection.py   │         │ distance_matrix.py   │         │ optimization.py      │
-│                      │         │                      │         │                      │
-│ - WPRDC facilities   │────────>│ - Project to         │────────>│ - Gurobi MILP solver │
-│ - Census ACS 2022    │         │   EPSG:2272          │         │ - 5 objectives       │
-│ - Vulnerability index│         │ - Euclidean distance │         │ - Budgets 0-10       │
-│                      │         │ - x1.3 detour factor │         │ - 55 scenario runs   │
+│ data_collection.py   │         │ distance_matrix.py  │         │ optimization.py      │
+│                      │         │                     │         │                      │
+│ - WPRDC facilities   │────────>│ - Project to        │────────>│ - Gurobi MILP solver │
+│ - Census ACS 2022    │         │   EPSG:2272         │         │ - 5 objectives       │
+│ - Vulnerability index│         │ - Euclidean distance│         │ - Budgets 0-10       │
+│                      │         │ - x1.3 detour factor│         │ - 55 scenario runs   │
 └──────────────────────┘         └─────────────────────┘         └──────────────────────┘
                                                                            │
                                                                            v
                                                                   ┌────────────────┐
-                                                                  │ CSV outputs     │
-                                                                  │ + JSON exports  │
+                                                                  │ CSV outputs    │
+                                                                  │ + JSON exports │
                                                                   └───────┬────────┘
                                                                           │
                                                                           v
                                                                ┌──────────────────┐
                                                                │ React Dashboard  │
                                                                │ (client-side)    │
-                                                               │ Pre-computed JSON │
+                                                               │ Pre-computed JSON│
                                                                │ No server needed │
                                                                └──────────────────┘
 ```
