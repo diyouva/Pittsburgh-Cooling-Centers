@@ -1,180 +1,97 @@
-import { useState } from 'react';
 import { OBJECTIVES, OBJ_MAP } from '../utils/constants';
+
+const OBJ_FORMULAS = {
+  min_total_distance: 'min Σ dᵢⱼ · xᵢⱼ',
+  min_pop_weighted: 'min Σ popᵢ · dᵢⱼ · xᵢⱼ',
+  min_vuln_weighted: 'min Σ vulnᵢ · dᵢⱼ · xᵢⱼ',
+  min_worst_case: 'min max{dᵢⱼ · xᵢⱼ}',
+  max_coverage: 'max Σ popᵢ · cᵢ  (dᵢⱼ ≤ 1250m)',
+};
 
 export default function Sidebar({ objective, setObjective, nNew, setNNew }) {
   const obj = OBJ_MAP[objective];
-  const [showGuide, setShowGuide] = useState(false);
 
   return (
-    <aside className="w-full lg:w-96 shrink-0 bg-[#eef6f2] border-r border-[#c8e3d8] p-6 flex flex-col gap-5 lg:overflow-y-auto lg:max-h-screen">
-
-      {/* 1. Model Controls (moved to top) */}
-      <div>
-        <div className="flex items-center gap-2 mb-1">
-          <div className="w-2 h-2 rounded-full bg-[#B33951] animate-pulse" />
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-[#171717]">Model Controls</h2>
-        </div>
-        <p className="text-xs text-[#54494B] mb-3">Configure the optimization parameters</p>
-
-        <label className="block text-xs font-medium text-[#54494B] uppercase tracking-wider mb-2">
-          Optimization Objective
-        </label>
-        <select
-          value={objective}
-          onChange={e => setObjective(e.target.value)}
-          className="w-full bg-[#fdfbf3] border border-[#d9cc9e] rounded-lg px-3 py-2.5 text-sm text-[#171717]
-            focus:outline-none focus:ring-2 focus:ring-[#B33951]/30 focus:border-[#B33951]
-            cursor-pointer appearance-none"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2354494B'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E")`,
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition: 'right 0.5rem center',
-            backgroundSize: '1.25em',
-          }}
-        >
-          {OBJECTIVES.map(o => (
-            <option key={o.key} value={o.key}>{o.label}</option>
-          ))}
-        </select>
-
-        <div
-          className="rounded-lg p-3 border text-xs leading-relaxed text-[#54494B] mt-3"
-          style={{ borderColor: obj.color + '30', backgroundColor: obj.color + '08' }}
-        >
-          <span className="inline-block w-2 h-2 rounded-full mr-1.5" style={{ backgroundColor: obj.color }} />
-          {obj.description}
-        </div>
-
-        <label className="block text-xs font-medium text-[#54494B] uppercase tracking-wider mb-2 mt-4">
-          New Centers to Add
-        </label>
-        <div className="flex items-center gap-4">
-          <input
-            type="range"
-            min={0}
-            max={10}
-            value={nNew}
-            onChange={e => setNNew(Number(e.target.value))}
-            className="flex-1 cursor-pointer"
-          />
-          <span className="text-2xl font-bold text-[#B33951] w-8 text-center">{nNew}</span>
-        </div>
-        <div className="flex justify-between text-xs text-gray-400 mt-1 px-0.5">
-          <span>0</span>
-          <span>5</span>
-          <span>10</span>
-        </div>
+    <aside className="w-full lg:w-96 shrink-0 bg-[#eef6f2] border-r border-[#c8e3d8] lg:sticky lg:top-0 lg:h-screen flex flex-col">
+      <div className="p-6 border-b border-[#c8e3d8]">
+        <h1 className="text-2xl font-bold text-[#171717] leading-tight">Pittsburgh<br />Cooling Centers</h1>
+        <p className="text-sm text-[#54494B] leading-snug mt-1">Equity-aware facility location optimization</p>
       </div>
 
-      <hr className="border-[#c8e3d8]" />
-
-      {/* 2. How to Use (collapsible) */}
-      <div>
-        <button
-          onClick={() => setShowGuide(v => !v)}
-          className="flex items-center justify-between w-full cursor-pointer group"
-        >
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-[#171717]">How to Use</h3>
-          <span className={`text-[#54494B] text-xs transition-transform duration-200 ${showGuide ? 'rotate-180' : ''}`}>
-            ▾
-          </span>
-        </button>
-        {showGuide && (
-          <div className="mt-2 grid grid-cols-2 gap-2">
-            {[
-              { n: '1', t: 'Pick an objective', d: 'Choose an equity priority from the dropdown' },
-              { n: '2', t: 'Set budget', d: 'Drag slider to add 0-10 new centers' },
-              { n: '3', t: 'Explore map', d: 'Hover block groups for distance and population' },
-              { n: '4', t: 'Compare', d: 'Scroll down for charts and trade-off tables' },
-            ].map(s => (
-              <div key={s.n} className="bg-[#f5faf7] rounded-lg p-2.5 border border-[#d4ebe1]">
-                <div className="flex items-center gap-1.5 mb-1">
-                  <span className="w-4 h-4 rounded-full bg-[#91C7B1] text-[9px] font-bold text-white flex items-center justify-center">{s.n}</span>
-                  <span className="text-[11px] font-medium text-[#171717]">{s.t}</span>
-                </div>
-                <p className="text-[10px] text-[#54494B] leading-snug">{s.d}</p>
-              </div>
+      <div className="p-6 flex-1 flex flex-col gap-5 overflow-y-auto">
+        <div>
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-[#171717] mb-3">Objective</h2>
+          <div className="space-y-1">
+            {OBJECTIVES.map(o => (
+              <button
+                key={o.key}
+                onClick={() => setObjective(o.key)}
+                className={`w-full flex items-center gap-2.5 text-left text-base px-3 py-2 rounded-lg transition-colors cursor-pointer ${
+                  objective === o.key
+                    ? 'bg-white/80 font-medium text-[#171717] shadow-sm'
+                    : 'text-[#54494B] hover:bg-white/40'
+                }`}
+              >
+                <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: o.color }} />
+                {o.label}
+              </button>
             ))}
           </div>
-        )}
-      </div>
+          <div
+            className="rounded-lg p-3 border text-sm leading-relaxed text-[#54494B] mt-3"
+            style={{ borderColor: obj.color + '30', backgroundColor: obj.color + '08' }}
+          >
+            <span className="inline-block w-2.5 h-2.5 rounded-full mr-1.5" style={{ backgroundColor: obj.color }} />
+            {obj.description}
+            <div className="mt-2 font-mono text-xs text-[#171717]/60">{OBJ_FORMULAS[objective]}</div>
+          </div>
+        </div>
 
-      <hr className="border-[#c8e3d8]" />
+        <div>
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-[#171717] mb-3">New Centers</h2>
+          <div className="flex items-center gap-3">
+            <input
+              type="range"
+              min={0}
+              max={10}
+              value={nNew}
+              onChange={e => setNNew(Number(e.target.value))}
+              className="flex-1 cursor-pointer"
+            />
+            <span className="text-3xl font-bold text-[#B33951] w-10 text-center">{nNew}</span>
+          </div>
+          <div className="flex justify-between text-sm text-gray-400 mt-1 px-0.5">
+            <span>0</span><span>5</span><span>10</span>
+          </div>
+        </div>
 
-      {/* 3. Methodology */}
-      <div>
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-[#171717] mb-2">Methodology</h3>
-        <div className="text-xs leading-relaxed text-[#54494B] space-y-2">
-          <p>
-            <span className="font-medium text-[#171717]">1. Vulnerability Index</span><br />
-            Three Census ACS 2022 indicators (population aged 65+, poverty rate, and households without a vehicle) are converted to percentile ranks, then averaged into a single composite score per block group.
-          </p>
-          <p>
-            <span className="font-medium text-[#171717]">2. Distance Computation</span><br />
-            Walking distance from each block group centroid to every candidate site is estimated as Euclidean distance multiplied by a 1.3 urban detour factor. A 15 minute walk equals approximately 1,250 meters.
-          </p>
-          <p>
-            <span className="font-medium text-[#171717]">3. MILP Optimization</span><br />
-            A Mixed Integer Linear Program (solved with Gurobi) selects exactly N new sites from the candidate pool. The solver runs under five different objective functions, each reflecting a distinct equity lens.
-          </p>
+        <hr className="border-[#c8e3d8]" />
+
+        <div>
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-[#171717] mb-3">Methodology</h2>
+          <div className="text-sm leading-relaxed text-[#54494B] space-y-2">
+            <p><span className="font-medium text-[#171717]">Vulnerability Index:</span> percentile ranks of % aged 65+, poverty rate, and % no-vehicle households, averaged per block group.</p>
+            <p><span className="font-medium text-[#171717]">Distance:</span> Euclidean in EPSG:2272 × 1.3 detour factor. 15-min walk = 1,250 m.</p>
+            <p><span className="font-medium text-[#171717]">Solver:</span> Gurobi MILP with binary site-open and demand-assignment variables.</p>
+          </div>
+        </div>
+
+        <hr className="border-[#c8e3d8]" />
+
+        <div>
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-[#171717] mb-3">Data Sources</h2>
+          <div className="text-sm leading-relaxed text-[#54494B] space-y-2">
+            <p><span className="font-medium text-[#171717]">1,050 block groups:</span> Census TIGER/Line + ACS 2022 demographics.</p>
+            <p><span className="font-medium text-[#171717]">87 candidate sites:</span> WPRDC facilities (rec centers, libraries, pools, senior centers).</p>
+            <p><span className="font-medium text-[#171717]">5 existing centers:</span> currently designated City of Pittsburgh cooling centers.</p>
+          </div>
         </div>
       </div>
 
-      <hr className="border-[#c8e3d8]" />
-
-      {/* 4. Data Sources */}
-      <div>
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-[#171717] mb-2">Data Sources</h3>
-        <div className="text-xs leading-relaxed text-[#54494B] space-y-2">
-          <p>
-            <span className="font-medium text-[#171717]">Census Block Groups</span><br />
-            1,050 block groups in Allegheny County from the U.S. Census TIGER/Line shapefiles with demographic variables drawn from the American Community Survey (ACS) 2022 five year estimates.
-          </p>
-          <p>
-            <span className="font-medium text-[#171717]">Candidate Sites</span><br />
-            87 public facility locations sourced from the Western Pennsylvania Regional Data Center (WPRDC), including community centers, senior centers, pools, recreation facilities, and libraries.
-          </p>
-          <p>
-            <span className="font-medium text-[#171717]">Existing Cooling Centers</span><br />
-            5 currently designated cooling centers in the City of Pittsburgh, used as fixed sites in every optimization scenario.
-          </p>
-        </div>
+      <div className="p-5 border-t border-[#c8e3d8] text-xs text-[#54494B] leading-relaxed">
+        WPRDC · Census ACS 2022 · OpenStreetMap<br />
+        Gurobi MILP · 55 scenarios
       </div>
-
-      <hr className="border-[#c8e3d8]" />
-
-      {/* 5. Fixed Cooling Centers */}
-      <div>
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-[#171717] mb-2">Fixed Cooling Centers</h3>
-        <p className="text-xs text-[#54494B] mb-2">These 5 centers are always active in every scenario</p>
-        <div className="space-y-1.5">
-          {['Greenfield Senior Center', 'Homewood Senior Center', 'Sheraden Senior Center', 'South Side Senior Center', 'Mount Washington Senior Center'].map(name => (
-            <div key={name} className="flex items-center gap-2 text-xs text-[#54494B]">
-              <span className="w-2 h-2 rounded-full shrink-0 bg-[#2563eb]" />
-              {name}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <hr className="border-[#c8e3d8]" />
-
-      {/* 6. Objectives at a Glance */}
-      <div>
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-[#171717] mb-2">Objectives at a Glance</h3>
-        <div className="space-y-2">
-          {OBJECTIVES.map(o => (
-            <div key={o.key} className="flex items-start gap-2 text-xs">
-              <span className="w-2 h-2 rounded-full shrink-0 mt-1" style={{ backgroundColor: o.color }} />
-              <div>
-                <span className="font-medium text-[#171717]">{o.short}</span>
-                <p className="text-[#54494B] leading-relaxed">{o.description}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
     </aside>
   );
 }
