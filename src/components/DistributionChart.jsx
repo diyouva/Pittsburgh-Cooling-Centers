@@ -15,7 +15,7 @@ function CustomTooltip({ active, payload }) {
   );
 }
 
-export default function DistributionChart({ blockGroups, sites, scenario, assignmentMap }) {
+export default function DistributionChart({ scenario, assignmentMap }) {
   const distancesKm = useMemo(() => {
     if (!assignmentMap || Object.keys(assignmentMap).length === 0) return [];
     return Object.values(assignmentMap).map(a => a.distance_m / 1000);
