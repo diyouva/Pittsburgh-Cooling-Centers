@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { MAX_WALK_METERS } from '../utils/constants';
-import { computeDistances, computeHistogramBins, getP90 } from '../hooks/useData';
+import { computeHistogramBins, getP90 } from '../hooks/useData';
 import HelpToggle from './HelpToggle';
 
 function CustomTooltip({ active, payload }) {
@@ -15,12 +15,11 @@ function CustomTooltip({ active, payload }) {
   );
 }
 
-export default function DistributionChart({ blockGroups, sites, scenario }) {
+export default function DistributionChart({ blockGroups, sites, scenario, assignmentMap }) {
   const distancesKm = useMemo(() => {
-    if (!blockGroups || !sites || !scenario?.open_site_ids) return [];
-    const meters = computeDistances(blockGroups, sites, scenario.open_site_ids);
-    return meters.map(d => d / 1000);
-  }, [blockGroups, sites, scenario]);
+    if (!assignmentMap || Object.keys(assignmentMap).length === 0) return [];
+    return Object.values(assignmentMap).map(a => a.distance_m / 1000);
+  }, [assignmentMap]);
 
   const bins = useMemo(() => computeHistogramBins(distancesKm), [distancesKm]);
   const p90 = useMemo(() => getP90(distancesKm), [distancesKm]);

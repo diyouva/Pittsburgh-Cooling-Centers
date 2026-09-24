@@ -71,7 +71,7 @@ export default function App() {
               <><SkeletonChart /><SkeletonChart /></>
             ) : (
               <>
-                <DistributionChart blockGroups={data.blockGroups} sites={data.sites} scenario={scenario} />
+                <DistributionChart blockGroups={data.blockGroups} sites={data.sites} scenario={scenario} assignmentMap={assignmentMap} />
                 <ComparisonTable scenarios={data.scenarios} nNew={nNew} />
               </>
             )}

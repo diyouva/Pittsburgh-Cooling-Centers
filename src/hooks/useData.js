@@ -34,44 +34,6 @@ export function getAssignmentMap(assignments, objective, nNew) {
   return map;
 }
 
-function getCentroid(geometry) {
-  let coords;
-  if (geometry.type === 'MultiPolygon') {
-    coords = geometry.coordinates.flat(2);
-  } else {
-    coords = geometry.coordinates[0];
-  }
-  let sumLon = 0, sumLat = 0;
-  for (const [lon, lat] of coords) {
-    sumLon += lon;
-    sumLat += lat;
-  }
-  return [sumLat / coords.length, sumLon / coords.length];
-}
-
-const DETOUR = 1.3;
-const DEG_LAT_M = 111320;
-const DEG_LON_M = 111320 * Math.cos(40.44 * Math.PI / 180);
-
-function euclideanMeters(lat1, lon1, lat2, lon2) {
-  const dy = (lat2 - lat1) * DEG_LAT_M;
-  const dx = (lon2 - lon1) * DEG_LON_M;
-  return Math.sqrt(dx * dx + dy * dy) * DETOUR;
-}
-
-export function computeDistances(blockGroups, sites, openSiteIds) {
-  const openSites = sites.filter(s => openSiteIds.includes(s.site_id));
-  return blockGroups.features.map(f => {
-    const [lat, lon] = getCentroid(f.geometry);
-    let minDist = Infinity;
-    for (const s of openSites) {
-      const d = euclideanMeters(lat, lon, s.lat, s.lon);
-      if (d < minDist) minDist = d;
-    }
-    return minDist;
-  });
-}
-
 export function computeHistogramBins(distancesKm, binCount = 40) {
   if (!distancesKm.length) return [];
   const max = Math.max(...distancesKm);
