@@ -44,3 +44,4 @@ npm-debug.log*
 # Large cached data
 cache/
 *.graphml
+*.zip
