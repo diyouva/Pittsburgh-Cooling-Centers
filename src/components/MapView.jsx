@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { MapContainer, TileLayer, GeoJSON, CircleMarker, Popup, Tooltip, useMap, Pane } from 'react-leaflet';
-import { PGH_CENTER, MAP_BOUNDS, DISTANCE_COLORS } from '../utils/constants';
+import { PGH_CENTER, MAP_BOUNDS, DISTANCE_COLORS, DISTANCE_VMAX_KM } from '../utils/constants';
 import 'leaflet/dist/leaflet.css';
 
 function FitBounds() {
@@ -35,12 +35,7 @@ export default function MapView({ blockGroups, sites, scenario, assignmentMap })
     [scenario]
   );
 
-  const vmax = useMemo(() => {
-    if (!assignmentMap || Object.keys(assignmentMap).length === 0) return 20;
-    const distances = Object.values(assignmentMap).map(a => a.distance_m / 1000);
-    distances.sort((a, b) => a - b);
-    return distances[Math.floor(distances.length * 0.95)] || 20;
-  }, [assignmentMap]);
+  const vmax = DISTANCE_VMAX_KM;
 
   const geoStyle = useMemo(() => {
     return (feature) => {

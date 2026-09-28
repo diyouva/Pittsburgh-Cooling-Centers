@@ -15,3 +15,4 @@ export const PGH_CENTER = [40.4406, -79.9959];
 export const MAP_BOUNDS = [[40.36, -80.10], [40.50, -79.86]];
 
 export const DISTANCE_COLORS = ['#2ecc71', '#f1c40f', '#e67e22', '#e74c3c', '#8e44ad'];
+export const DISTANCE_VMAX_KM = 7;
